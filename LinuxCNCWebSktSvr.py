@@ -814,7 +814,7 @@ class CommandItem( object ):
 
     def put_gcode_file( self, filename, data ):
         global linuxcnc_command
-
+        print "saving code to: {}".format(filename)
         reply = {'code':LinuxCNCServerCommand.REPLY_COMMAND_OK}
         try:
             
@@ -823,7 +823,7 @@ class CommandItem( object ):
             [h,f] = os.path.split( filename )
 
             path = StatusItem.get_ini_data( only_section='DISPLAY', only_name='PROGRAM_PREFIX' )['data']['parameters'][0]['values']['value']
-            
+            print "path = {}".format(path)
             try:
                 fo = open( os.path.join( path, f ), 'w' )
                 fo.write(data)
@@ -936,6 +936,7 @@ class CommandItem( object ):
 
             if (self.type == CommandItem.MOTION):
                 # execute command as a linuxcnc module call
+                print "{} : {}".format(params, map(type, params))
                 (linuxcnc_command.__getattribute__( self.name ))( *params )
 
             elif (self.type == CommandItem.HAL):
@@ -967,6 +968,7 @@ class CommandItem( object ):
                 elif (self.name == 'startup'):
                     reply = self.start_linuxcnc()
                 elif (self.name == 'program_upload'):
+                    print "program_upload({}, {})".format(passed_command_dict.get('filename'), passed_command_dict.get('data'))
                     reply = self.put_gcode_file(filename=passed_command_dict.get('filename',passed_command_dict['0']).strip(), data=passed_command_dict.get('data', passed_command_dict['1']))
                 elif (self.name == 'save_client_config'):
                     reply = self.put_client_config( (passed_command_dict.get('key', passed_command_dict.get('0'))), (passed_command_dict.get('value', passed_command_dict.get('1'))) );
